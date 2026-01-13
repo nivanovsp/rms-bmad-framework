@@ -36,6 +36,7 @@ core_principles:
 | `*create-competitor-analysis` | Create competitor analysis document | Execute `create-doc` skill with `competitor-analysis-tmpl.yaml` |
 | `*create-project-brief` | Create project brief document | Execute `create-doc` skill with `project-brief-tmpl.yaml` |
 | `*elicit` | Run advanced elicitation for requirements gathering | Execute `advanced-elicitation` skill |
+| `*init-project` | Initialize project with MLDA documentation scaffolding | Execute `init-project` skill |
 | `*market-research` | Perform market research analysis | Execute `create-doc` skill with `market-research-tmpl.yaml` |
 | `*research` | Create deep research prompt for a topic | Execute `create-deep-research-prompt` skill |
 | `*exit` | Leave analyst mode | Return to default Claude behavior |
@@ -63,6 +64,15 @@ core_principles:
 **Data:** `elicitation-methods`
 **Process:** Deep requirements gathering using structured elicitation techniques.
 
+### *init-project
+**Skill:** `init-project`
+**Script:** `mlda-init-project.ps1`
+**Process:** Interactive project initialization that:
+1. Assesses documentation scope (threshold: 15+ docs)
+2. Prompts for domain selection (API, AUTH, DATA, INV, SEC, UI, etc.)
+3. Scaffolds `.mlda/` folder structure with scripts, templates, and registry
+4. Optionally migrates existing documents by creating `.meta.yaml` sidecars
+
 ### *market-research
 **Skill:** `create-doc`
 **Template:** `market-research-tmpl.yaml`
@@ -81,6 +91,7 @@ skills:
   - create-doc
   - document-project
   - facilitate-brainstorming-session
+  - init-project
 templates:
   - brainstorming-output-tmpl.yaml
   - competitor-analysis-tmpl.yaml
@@ -90,6 +101,8 @@ data:
   - bmad-kb
   - brainstorming-techniques
   - elicitation-methods
+scripts:
+  - mlda-init-project.ps1
 ```
 
 ## Activation

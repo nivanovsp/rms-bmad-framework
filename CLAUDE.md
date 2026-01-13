@@ -107,11 +107,33 @@ All commands support `--json` flag. Issues auto-sync via git-friendly JSONL file
 
 **Modular Linked Documentation Architecture** - for projects using MLDA:
 
+### Project Initialization
+
+For documentation-heavy projects (15+ expected documents), initialize MLDA:
+
+```bash
+# Via skill (recommended)
+/skills:init-project
+
+# Or via analyst mode
+/modes:analyst then *init-project
+
+# Or via PowerShell directly
+.\.mlda\scripts\mlda-init-project.ps1 -Domains API,DATA,SEC
+```
+
+The initialization will:
+1. Ask about documentation scope
+2. Prompt for domain selection
+3. Scaffold `.mlda/` folder structure
+4. Copy scripts and templates
+5. Initialize registry.yaml
+
 ### Document Creation
 - Create topic documents, not monolithic documents
 - Use `.mlda/scripts/mlda-create.ps1` to scaffold new topic docs
 - Each topic doc needs a companion `.meta.yaml` sidecar
-- Assign DOC-ID from appropriate domain (AUTH, API, UI, DATA, SEC, etc.)
+- Assign DOC-ID from appropriate domain (AUTH, API, UI, DATA, SEC, INV, etc.)
 
 ### Linking
 - Use DOC-IDs when referencing other documents: `DOC-{DOMAIN}-{NNN}`
@@ -122,6 +144,16 @@ All commands support `--json` flag. Issues auto-sync via git-friendly JSONL file
 - Run `mlda-registry.ps1` after creating new topic docs
 - Run `mlda-validate.ps1` to check link integrity
 - Run `mlda-brief.ps1` to regenerate project brief
+
+### Migration
+
+For existing projects with documents that need MLDA:
+
+```bash
+.\.mlda\scripts\mlda-init-project.ps1 -Domains INV -Migrate
+```
+
+This creates `.meta.yaml` sidecars for existing `.md` files.
 
 ---
 
