@@ -116,6 +116,36 @@ Once in a mode, these universal commands are available:
 | `*exit` | Leave current mode |
 | `*yolo` | Toggle autonomous mode (where supported) |
 
+## Quick Command Reference
+
+Each mode command automatically loads the right skill and template:
+
+### Key Analyst Commands
+| Command | Skill | Template |
+|---------|-------|----------|
+| `*create-project-brief` | `create-doc` | `project-brief-tmpl.yaml` |
+| `*brainstorm` | `facilitate-brainstorming-session` | `brainstorming-output-tmpl.yaml` |
+
+### Key Architect Commands
+| Command | Skill | Template |
+|---------|-------|----------|
+| `*create-fullstack-architecture` | `create-doc` | `fullstack-architecture-tmpl.yaml` |
+| `*execute-checklist` | `execute-checklist` | + `architect-checklist` |
+
+### Key PM Commands
+| Command | Skill | Template |
+|---------|-------|----------|
+| `*create-prd` | `create-doc` | `prd-tmpl.yaml` |
+| `*create-story` | `create-doc` | `story-tmpl.yaml` |
+
+### Key QA Commands
+| Command | Skill | Template |
+|---------|-------|----------|
+| `*gate` | `qa-gate` | `qa-gate-tmpl.yaml` |
+| `*review` | `review-story` | `qa-gate-tmpl.yaml` |
+
+See [USER-GUIDE.md](docs/USER-GUIDE.md) for the complete command reference with all skill/template mappings.
+
 ## Repository Structure
 
 ```

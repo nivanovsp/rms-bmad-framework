@@ -452,56 +452,118 @@ Located in `.mlda/scripts/` (project-level):
 | `*exit` | Leave current mode |
 | `*yolo` | Toggle autonomous mode |
 
-### Mode-Specific Commands
+### Complete Mode Command Reference
 
-#### Analyst Mode
-| Command | Description |
-|---------|-------------|
-| `*brainstorm {topic}` | Facilitate brainstorming |
-| `*create-project-brief` | Create project brief |
-| `*create-competitor-analysis` | Competitive analysis |
-| `*perform-market-research` | Market research |
-| `*elicit` | Requirements elicitation |
-| `*research {topic}` | Create research prompt |
+Each command below shows exactly which skill and template it uses.
 
-#### Architect Mode
-| Command | Description |
-|---------|-------------|
-| `*create-backend-architecture` | Backend architecture |
-| `*create-frontend-architecture` | Frontend architecture |
-| `*create-fullstack-architecture` | Full stack architecture |
-| `*create-brownfield-architecture` | Existing system architecture |
-| `*document-project` | Document existing code |
-| `*execute-checklist` | Run architect checklist |
-| `*shard-doc` | Break doc into modules |
+#### Analyst Mode (Mary)
 
-#### PM Mode
-| Command | Description |
-|---------|-------------|
-| `*create-prd` | Create PRD |
-| `*create-brownfield-prd` | PRD for existing product |
-| `*create-epic` | Create epic |
-| `*create-story` | Create story |
-| `*correct-course` | Course correction |
-| `*shard-prd` | Break PRD into modules |
+| Command | Skill | Template | Data |
+|---------|-------|----------|------|
+| `*brainstorm` | `facilitate-brainstorming-session` | `brainstorming-output-tmpl.yaml` | `brainstorming-techniques` |
+| `*create-competitor-analysis` | `create-doc` | `competitor-analysis-tmpl.yaml` | - |
+| `*create-project-brief` | `create-doc` | `project-brief-tmpl.yaml` | - |
+| `*elicit` | `advanced-elicitation` | - | `elicitation-methods` |
+| `*market-research` | `create-doc` | `market-research-tmpl.yaml` | - |
+| `*research` | `create-deep-research-prompt` | - | - |
 
-#### Dev Mode
-| Command | Description |
-|---------|-------------|
-| `*develop-story` | Implement story |
-| `*run-tests` | Execute tests |
-| `*review-qa` | Apply QA fixes |
-| `*explain` | Explain what was done |
+#### Architect Mode (Winston)
 
-#### QA Mode
-| Command | Description |
-|---------|-------------|
-| `*review {story}` | Comprehensive review |
-| `*gate {story}` | Create quality gate |
-| `*test-design {story}` | Create test scenarios |
-| `*trace {story}` | Requirements traceability |
-| `*risk-profile {story}` | Risk assessment |
-| `*nfr-assess {story}` | NFR validation |
+| Command | Skill | Template | Checklist |
+|---------|-------|----------|-----------|
+| `*create-backend-architecture` | `create-doc` | `architecture-tmpl.yaml` | - |
+| `*create-brownfield-architecture` | `create-doc` | `brownfield-architecture-tmpl.yaml` | - |
+| `*create-frontend-architecture` | `create-doc` | `front-end-architecture-tmpl.yaml` | - |
+| `*create-fullstack-architecture` | `create-doc` | `fullstack-architecture-tmpl.yaml` | - |
+| `*document-project` | `document-project` | - | - |
+| `*execute-checklist` | `execute-checklist` | - | `architect-checklist` |
+| `*research` | `create-deep-research-prompt` | - | - |
+| `*shard-doc` | `shard-doc` | - | - |
+
+#### PM Mode (John)
+
+| Command | Skill | Template | Checklist |
+|---------|-------|----------|-----------|
+| `*correct-course` | `correct-course` | - | `change-checklist` |
+| `*create-brownfield-epic` | `brownfield-create-epic` | - | - |
+| `*create-brownfield-prd` | `create-doc` | `brownfield-prd-tmpl.yaml` | - |
+| `*create-brownfield-story` | `brownfield-create-story` | - | - |
+| `*create-epic` | `create-doc` | `prd-tmpl.yaml` | - |
+| `*create-prd` | `create-doc` | `prd-tmpl.yaml` | `pm-checklist` |
+| `*create-story` | `create-doc` | `story-tmpl.yaml` | - |
+| `*shard-prd` | `shard-doc` | - | - |
+
+#### PO Mode (Oliver)
+
+| Command | Skill | Template | Checklist |
+|---------|-------|----------|-----------|
+| `*create-next-story` | `create-next-story` | `story-tmpl.yaml` | - |
+| `*validate-story` | `validate-next-story` | - | `story-draft-checklist` |
+| `*review-story` | `review-story` | - | - |
+| `*execute-checklist` | `execute-checklist` | - | `po-master-checklist` |
+| `*prioritize` | Manual workflow | - | - |
+
+#### Dev Mode (James)
+
+| Command | Skill | Template | Checklist |
+|---------|-------|----------|-----------|
+| `*develop-story` | `validate-next-story` | - | `story-dod-checklist` |
+| `*explain` | Manual workflow | - | - |
+| `*review-qa` | `apply-qa-fixes` | - | - |
+| `*run-tests` | Manual workflow | - | - |
+
+#### QA Mode (Quinn)
+
+| Command | Skill | Template | Data |
+|---------|-------|----------|------|
+| `*gate` | `qa-gate` | `qa-gate-tmpl.yaml` | - |
+| `*nfr-assess` | `nfr-assess` | - | `technical-preferences` |
+| `*review` | `review-story` | `qa-gate-tmpl.yaml` | - |
+| `*risk-profile` | `risk-profile` | - | - |
+| `*test-design` | `test-design` | - | `test-levels-framework`, `test-priorities-matrix` |
+| `*trace` | `trace-requirements` | - | - |
+
+#### SM Mode (Scott)
+
+| Command | Skill | Template | Checklist |
+|---------|-------|----------|-----------|
+| `*create-next-story` | `create-next-story` | `story-tmpl.yaml` | - |
+| `*review-story` | `review-story` | - | `story-draft-checklist` |
+| `*facilitate-retro` | Manual workflow | - | - |
+| `*identify-blockers` | Manual workflow | - | - |
+
+#### UX-Expert Mode (Uma)
+
+| Command | Skill | Template |
+|---------|-------|----------|
+| `*create-frontend-spec` | `create-doc` | `front-end-spec-tmpl.yaml` |
+| `*create-wireframe` | Manual workflow | - |
+| `*review-accessibility` | Manual workflow | - |
+| `*design-system` | Manual workflow | - |
+| `*user-flow` | Manual workflow | - |
+
+#### BMAD-Master Mode (Brian)
+
+| Command | Skill | Templates Available |
+|---------|-------|---------------------|
+| `*analyze` | `advanced-elicitation` or `facilitate-brainstorming-session` | - |
+| `*architect` | `create-doc` | All architecture templates |
+| `*develop` | Manual workflow | - |
+| `*test` | `qa-gate` | `qa-gate-tmpl.yaml` |
+| `*manage` | `create-doc` | All PRD templates |
+| `*research` | `create-deep-research-prompt` | - |
+| `*create-doc` | `create-doc` | Any template (specify) |
+| `*execute-checklist` | `execute-checklist` | Any checklist (specify) |
+
+#### BMAD-Orchestrator Mode (Oscar)
+
+| Command | Type | Purpose |
+|---------|------|---------|
+| `*recommend-mode` | Orchestration | Suggest best mode for task |
+| `*show-workflow` | Orchestration | Display greenfield/brownfield flow |
+| `*handoff` | Orchestration | Prepare context for next mode |
+| `*status` | Orchestration | Show workflow position |
+| `*next-step` | Orchestration | Recommend next action |
 
 ### MLDA Scripts
 
