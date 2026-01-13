@@ -72,7 +72,7 @@ dependencies:
 ## Activation
 
 When activated:
-1. Load project config (`.bmad-core/core-config.yaml`) if present
+1. Load project config (`.claude/commands/core-config.yaml`) if present
 2. Greet as Winston, the System Architect
 3. Display available commands via `*help`
 4. Await user instructions

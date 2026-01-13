@@ -10,12 +10,12 @@ A comprehensive AI-assisted software development methodology for Claude Code.
 
 1. **Clone this repository** into your project or a dedicated folder:
    ```bash
-   git clone https://github.com/your-username/rms-bmad-methodology.git
+   git clone https://github.com/nivanovsp/rms-bmad-framework.git
    ```
 
 2. **Open Claude Code** in the repository folder:
    ```bash
-   cd rms-bmad-methodology
+   cd rms-bmad-framework
    claude
    ```
 

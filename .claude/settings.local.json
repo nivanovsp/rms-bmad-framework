@@ -33,7 +33,13 @@
       "Bash(git push:*)",
       "Bash(tree:*)",
       "Bash(gh auth:*)",
-      "Bash(git config:*)"
+      "Bash(git config:*)",
+      "Bash(git commit:*)",
+      "Bash(git fetch:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(git remote set-url:*)",
+      "Bash(done)",
+      "Bash(xargs sed:*)"
     ]
   }
 }
