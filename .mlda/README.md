@@ -1,8 +1,43 @@
 # MLDA - Modular Linked Documentation Architecture
 
-A lightweight system for creating small, linked topic documents instead of monolithic docs.
+A **knowledge graph** that agents navigate to gather context.
 
-**Core idea:** One topic = one document + one metadata sidecar.
+**Core idea:** Documents are neurons, relationships are dendrites, agents send signals through the network.
+
+---
+
+## The Neocortex Model
+
+MLDA models documentation as a neural network:
+
+```
+           ┌──────────────┐
+           │ DOC-API-001  │  ← Neuron (document)
+           │  (neuron)    │
+           └──────┬───────┘
+                  │ dendrite (relationship)
+     ┌────────────┼────────────┐
+     ▼            ▼            ▼
+┌──────────┐ ┌──────────┐ ┌──────────┐
+│DOC-AUTH  │ │DOC-DATA  │ │DOC-SEC   │
+│  -001    │ │  -003    │ │  -002    │
+└──────────┘ └──────────┘ └──────────┘
+
+Agent signal propagates through the network,
+following dendrites based on task requirements.
+```
+
+| Brain Concept | MLDA Equivalent |
+|---------------|-----------------|
+| Neuron | Document |
+| Dendrites | Relationships (`related` in sidecar) |
+| Axon | DOC-ID (unique identifier) |
+| Signal | Agent reading a document |
+| Signal Propagation | Following relationships |
+
+**Key Principle:** Stories and tasks are **entry points**, not complete specs. Agents navigate the graph to gather context.
+
+See `docs/core/mlda-neocortex-paradigm.md` (DOC-CORE-001) for the full paradigm documentation.
 
 ---
 

@@ -1,0 +1,34 @@
+id: DOC-CORE-001
+title: "MLDA Neocortex Paradigm"
+status: active
+
+created:
+  date: "2026-01-14"
+  by: "Claude (Architect)"
+
+updated:
+  date: "2026-01-14"
+  by: "Claude (Architect)"
+
+tags:
+  - architecture
+  - mlda
+  - neocortex
+  - knowledge-graph
+  - navigation
+  - paradigm
+
+summary: |
+  Foundational document explaining the neocortex model for MLDA.
+  Documents are neurons, relationships are dendrites, agents send signals
+  through the network by following connections to gather context.
+
+related:
+  - id: DOC-CORE-002
+    type: extends
+    why: "Navigation protocol - defines how agents traverse the graph"
+  - id: DOC-CORE-003
+    type: extends
+    why: "Sidecar schema - defines the dendrite structure"
+
+beads: "Ways of Development-23"

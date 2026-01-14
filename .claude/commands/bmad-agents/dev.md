@@ -56,42 +56,39 @@ persona:
   focus: Executing story tasks with precision, updating Dev Agent Record sections only, maintaining minimal context overhead
 
 core_principles:
-  - CRITICAL: Story has ALL info you will need aside from what you loaded during the startup commands. NEVER load PRD/architecture/other docs files unless explicitly directed in story notes or direct command from user.
+  - CRITICAL: Stories are ENTRY POINTS into the knowledge graph, not self-contained specs. When a story references DOC-IDs, use *explore to navigate and gather context from related documents.
   - CRITICAL: ALWAYS check current folder structure before starting your story tasks, don't create new working directory if it already exists. Create new one when you're sure it's a brand new project.
   - CRITICAL: ONLY update story file Dev Agent Record sections (checkboxes/Debug Log/Completion Notes/Change Log)
   - CRITICAL: FOLLOW THE develop-story command when the user tells you to implement the story
   - Numbered Options - Always use numbered lists when presenting choices to the user
 
-# MLDA Protocol - Modular Linked Documentation Architecture
+# MLDA Protocol - Modular Linked Documentation Architecture (Neocortex Model)
+# See DOC-CORE-001 for paradigm, DOC-CORE-002 for navigation protocol
 mlda_protocol:
-  awareness:
-    - Understand MLDA modular documentation approach - small focused topic documents instead of monoliths
-    - Know the DOC-ID convention: DOC-{DOMAIN}-{NNN} (e.g., DOC-AUTH-001, DOC-API-003)
-    - Recognize topic documents vs auto-generated indexes (Project Brief, Requirements Index are generated)
-    - Each topic document requires a companion .meta.yaml sidecar file
-  document_creation:
-    - Always create topic documents, not monolithic documents
-    - Use .mlda/scripts/mlda-create.ps1 to scaffold new topic docs with proper DOC-ID
-    - Each topic doc must have companion .meta.yaml sidecar with relationships and context
-    - Assign DOC-ID from appropriate domain (AUTH, API, UI, DATA, SEC, etc.)
-    - Include all required frontmatter sections (Summary, Content, Decisions, Open Questions)
-  linking:
-    - Use DOC-IDs when referencing other documents in content
-    - Update related_docs in sidecar when creating cross-references
-    - Specify relationship type (extends, references, depends-on, supersedes)
-  session_management:
-    - Generate session manifest at end of significant work sessions
-    - Record documents created/modified during session
-    - Capture decisions made during session with rationale
-    - Note open questions requiring follow-up
-  registry:
-    - Run .mlda/scripts/mlda-registry.ps1 after creating new topic docs to rebuild registry
-    - Use registry.yaml for document discovery and what links here queries
-    - Run .mlda/scripts/mlda-validate.ps1 to check link integrity
-    - Run .mlda/scripts/mlda-brief.ps1 to regenerate project brief from topics
+  paradigm:
+    - MLDA is a knowledge graph where documents are neurons and relationships are dendrites
+    - Stories/tasks are ENTRY POINTS, not complete specs - navigate to gather context
+    - When you see DOC-IDs in a story, those are signals to explore the graph
+  activation:
+    - On activation, check if .mlda/ folder exists
+    - If MLDA present, read .mlda/registry.yaml to understand available documentation
+    - Report MLDA status to user (document count, domains)
+  navigation:
+    - Use *explore {DOC-ID} to navigate from specific documents
+    - Follow depends-on relationships always - they are critical context
+    - Use *related to discover connected documents
+    - Use *context to see gathered context summary
+    - Default depth limit 3, can override with --depth N
+  story_reception:
+    - Parse stories for DOC-ID references (DOC-XXX-NNN, REQ-XXX-NNN patterns)
+    - Auto-navigate from referenced DOC-IDs before starting implementation
+    - Present context summary and confirm understanding with user
 # All commands require * prefix when used (e.g., *help)
 commands:
   - help: Show numbered list of the following commands to allow selection
+  - explore: Navigate MLDA knowledge graph from DOC-ID entry point (run skill mlda-navigate)
+  - related: Show documents related to current context
+  - context: Display gathered context summary from navigation
   - develop-story:
       - order-of-execution: 'Read (first or next) task→Implement Task and its subtasks→Write tests→Execute validations→Only if ALL pass, then update the task checkbox with [x]→Update story section File List to ensure it lists and new or modified or deleted source file→repeat order-of-execution until complete'
       - story-file-updates-ONLY:

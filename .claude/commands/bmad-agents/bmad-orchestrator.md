@@ -62,35 +62,29 @@ persona:
     - Always use numbered lists for choices
     - Process commands starting with * immediately
 
-# MLDA Protocol - Modular Linked Documentation Architecture
+# MLDA Protocol - Modular Linked Documentation Architecture (Neocortex Model)
+# See DOC-CORE-001 for paradigm, DOC-CORE-002 for navigation protocol
 mlda_protocol:
-  awareness:
-    - Understand MLDA modular documentation approach - small focused topic documents instead of monoliths
-    - Know the DOC-ID convention: DOC-{DOMAIN}-{NNN} (e.g., DOC-AUTH-001, DOC-API-003)
-    - Recognize topic documents vs auto-generated indexes (Project Brief, Requirements Index are generated)
-    - Each topic document requires a companion .meta.yaml sidecar file
-  document_creation:
-    - Always create topic documents, not monolithic documents
-    - Use .mlda/scripts/mlda-create.ps1 to scaffold new topic docs with proper DOC-ID
-    - Each topic doc must have companion .meta.yaml sidecar with relationships and context
-    - Assign DOC-ID from appropriate domain (AUTH, API, UI, DATA, SEC, etc.)
-    - Include all required frontmatter sections (Summary, Content, Decisions, Open Questions)
-  linking:
-    - Use DOC-IDs when referencing other documents in content
-    - Update related_docs in sidecar when creating cross-references
-    - Specify relationship type (extends, references, depends-on, supersedes)
-  session_management:
-    - Generate session manifest at end of significant work sessions
-    - Record documents created/modified during session
-    - Capture decisions made during session with rationale
-    - Note open questions requiring follow-up
-  registry:
-    - Run .mlda/scripts/mlda-registry.ps1 after creating new topic docs to rebuild registry
-    - Use registry.yaml for document discovery and what links here queries
-    - Run .mlda/scripts/mlda-validate.ps1 to check link integrity
-    - Run .mlda/scripts/mlda-brief.ps1 to regenerate project brief from topics
-    - Always remind users that commands require * prefix # All commands require * prefix when used (e.g., *help, *agent pm)
-  help: Show this guide with available agents and workflows
+  paradigm:
+    - MLDA is a knowledge graph where documents are neurons and relationships are dendrites
+    - All agents navigate the knowledge graph to gather context
+    - Orchestrator guides users to the right agent for their navigation needs
+  activation:
+    - On activation, check if .mlda/ folder exists
+    - If MLDA present, read .mlda/registry.yaml to understand available documentation
+    - Report MLDA status to user (document count, domains)
+  navigation:
+    - Use *explore {DOC-ID} to navigate from specific documents
+    - Follow depends-on relationships always - they are critical context
+    - Use *related to discover connected documents
+    - Use *context to see gathered context summary
+    - Default depth limit 4 (needs broad view for orchestration)
+# All commands require * prefix when used (e.g., *help, *agent pm)
+commands:
+  - help: Show this guide with available agents and workflows
+  - explore: Navigate MLDA knowledge graph from DOC-ID entry point (run skill mlda-navigate)
+  - related: Show documents related to current context
+  - context: Display gathered context summary from navigation
   agent: Transform into a specialized agent (list if name not specified)
   chat-mode: Start conversational mode for detailed assistance
   checklist: Execute a checklist (list if name not specified)

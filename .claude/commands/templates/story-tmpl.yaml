@@ -16,6 +16,7 @@ agent_config:
     - Status
     - Story
     - Acceptance Criteria
+    - Documentation References
     - Tasks / Subtasks
     - Dev Notes
     - Testing
@@ -67,14 +68,33 @@ sections:
     owner: scrum-master
     editors: [scrum-master, dev-agent]
 
+  - id: doc-references
+    title: Documentation References (Entry Points)
+    instruction: |
+      MLDA NEOCORTEX MODEL: Stories are entry points into the knowledge graph, not self-contained specs.
+      List DOC-IDs that the developer should navigate to gather context:
+      - Primary: Documents directly required for this story
+      - Secondary: Documents that may provide additional context
+      The dev agent will use *explore to traverse these documents and their relationships.
+    template: |
+      **Primary Documents (must explore):**
+      - DOC-XXX-NNN: Brief reason why needed
+      - REQ-XXX-NNN: Brief reason why needed
+
+      **Secondary Documents (explore if needed):**
+      - DOC-XXX-NNN: Brief reason why might be useful
+    elicit: true
+    owner: scrum-master
+    editors: [scrum-master]
+
   - id: dev-notes
     title: Dev Notes
     instruction: |
-      Populate relevant information, only what was pulled from actual artifacts from docs folder, relevant to this story:
-      - Do not invent information
-      - If known add Relevant Source Tree info that relates to this story
-      - If there were important notes from previous story that are relevant to this one, include them here
-      - Put enough information in this section so that the dev agent should NEVER need to read the architecture documents, these notes along with the tasks and subtasks must give the Dev Agent the complete context it needs to comprehend with the least amount of overhead the information to complete the story, meeting all AC and completing all tasks+subtasks
+      Additional context not captured in MLDA documents:
+      - Relevant Source Tree info that relates to this story
+      - Important notes from previous stories relevant to this one
+      - Specific implementation hints or constraints
+      NOTE: Do NOT duplicate information from MLDA documents here. Reference DOC-IDs instead.
     elicit: true
     owner: scrum-master
     editors: [scrum-master]

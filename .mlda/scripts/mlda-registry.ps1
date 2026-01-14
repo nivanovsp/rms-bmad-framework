@@ -4,8 +4,9 @@
 
 .DESCRIPTION
     Scans all .meta.yaml sidecar files in .mlda/docs/ and rebuilds
-    registry.yaml with current document index. Preserves domain
-    configuration and adds health statistics.
+    registry.yaml with current document index. Computes reverse
+    relationships (referenced_by) for bidirectional graph traversal.
+    Adds graph metadata and connectivity statistics.
 
 .PARAMETER Verify
     Check registry against actual files without modifying (dry run)
@@ -13,15 +14,20 @@
 .PARAMETER Stats
     Show statistics only, don't regenerate
 
+.PARAMETER Graph
+    Show graph connectivity analysis
+
 .EXAMPLE
     .\mlda-registry.ps1           # Regenerate registry
     .\mlda-registry.ps1 -Verify   # Check without modifying
     .\mlda-registry.ps1 -Stats    # Show stats only
+    .\mlda-registry.ps1 -Graph    # Show graph analysis
 #>
 
 param(
     [switch]$Verify,
-    [switch]$Stats
+    [switch]$Stats,
+    [switch]$Graph
 )
 
 $ErrorActionPreference = "Stop"
@@ -44,6 +50,8 @@ function Read-MetaYaml {
         beads = ""
         created_date = ""
         created_by = ""
+        related = @()
+        summary = ""
     }
 
     $content = Get-Content $Path -ErrorAction SilentlyContinue
@@ -51,12 +59,22 @@ function Read-MetaYaml {
 
     $inTags = $false
     $inCreated = $false
+    $inRelated = $false
+    $inRelatedItem = $false
+    $currentRelated = @{}
 
     foreach ($line in $content) {
         # Reset section flags on non-indented lines
         if ($line -match "^\w") {
+            # Save current related item if we were building one
+            if ($inRelatedItem -and $currentRelated.id) {
+                $meta.related += [PSCustomObject]$currentRelated
+            }
             $inTags = $false
             $inCreated = $false
+            $inRelated = $false
+            $inRelatedItem = $false
+            $currentRelated = @{}
         }
 
         if ($line -match "^id:\s*(.+)") {
@@ -77,6 +95,15 @@ function Read-MetaYaml {
         elseif ($line -match "^created:") {
             $inCreated = $true
         }
+        elseif ($line -match "^related:") {
+            $inRelated = $true
+        }
+        elseif ($line -match "^summary:\s*\|?\s*$") {
+            # Multi-line summary, skip for now
+        }
+        elseif ($line -match "^summary:\s*[`"']?([^`"']+)[`"']?") {
+            $meta.summary = $Matches[1].Trim()
+        }
         elseif ($inTags -and $line -match "^\s+-\s*(.+)") {
             $meta.tags += $Matches[1].Trim()
         }
@@ -86,6 +113,29 @@ function Read-MetaYaml {
         elseif ($inCreated -and $line -match "^\s+by:\s*[`"']?([^`"']+)[`"']?") {
             $meta.created_by = $Matches[1].Trim()
         }
+        elseif ($inRelated -and $line -match "^\s+-\s*id:\s*(.+)") {
+            # Save previous related item if exists
+            if ($inRelatedItem -and $currentRelated.id) {
+                $meta.related += [PSCustomObject]$currentRelated
+            }
+            $inRelatedItem = $true
+            $currentRelated = @{
+                id = $Matches[1].Trim()
+                type = "references"
+                why = ""
+            }
+        }
+        elseif ($inRelatedItem -and $line -match "^\s+type:\s*(.+)") {
+            $currentRelated.type = $Matches[1].Trim()
+        }
+        elseif ($inRelatedItem -and $line -match "^\s+why:\s*[`"']?([^`"']+)[`"']?") {
+            $currentRelated.why = $Matches[1].Trim()
+        }
+    }
+
+    # Don't forget last related item
+    if ($inRelatedItem -and $currentRelated.id) {
+        $meta.related += [PSCustomObject]$currentRelated
     }
 
     return $meta
@@ -94,7 +144,7 @@ function Read-MetaYaml {
 # Extract domains from current registry
 function Get-CurrentDomains {
     if (-not (Test-Path $RegistryFile)) {
-        return @("AUTH", "UM", "API", "UI", "DATA")
+        return @("AUTH", "UM", "API", "UI", "DATA", "CORE")
     }
 
     $domains = @()
@@ -163,8 +213,37 @@ else {
             Beads = $meta.beads
             CreatedDate = $meta.created_date
             CreatedBy = $meta.created_by
+            Related = $meta.related
+            Summary = $meta.summary
             MdExists = $mdExists
             MetaPath = $metaFile.FullName
+            ReferencedBy = @()  # Will be computed
+        }
+    }
+}
+
+# Compute reverse relationships (referenced_by)
+Write-Host "`nComputing reverse relationships..." -ForegroundColor Yellow
+$docIndex = @{}
+foreach ($doc in $documents) {
+    $docIndex[$doc.Id] = $doc
+}
+
+foreach ($doc in $documents) {
+    foreach ($rel in $doc.Related) {
+        $targetId = $rel.id
+        if ($docIndex.ContainsKey($targetId)) {
+            $reverseRel = [PSCustomObject]@{
+                id = $doc.Id
+                type = switch ($rel.type) {
+                    "depends-on" { "depended-by" }
+                    "extends" { "extended-by" }
+                    "supersedes" { "superseded-by" }
+                    default { "referenced-by" }
+                }
+                why = $rel.why
+            }
+            $docIndex[$targetId].ReferencedBy += $reverseRel
         }
     }
 }
@@ -176,11 +255,15 @@ $docStats = @{
     Deprecated = ($documents | Where-Object { $_.Status -eq "deprecated" }).Count
     WithBeads = ($documents | Where-Object { $_.Beads }).Count
     MissingMd = ($documents | Where-Object { -not $_.MdExists }).Count
+    WithRelationships = ($documents | Where-Object { $_.Related.Count -gt 0 }).Count
+    TotalRelationships = ($documents | ForEach-Object { $_.Related.Count } | Measure-Object -Sum).Sum
     ByDomain = @{}
+    ByRelationType = @{}
 }
 
+# Count by domain
 foreach ($doc in $documents) {
-    if ($doc.Id -match "DOC-(\w+)-\d+") {
+    if ($doc.Id -match "^(?:DOC-)?(\w+)-\d+") {
         $domain = $Matches[1]
         if (-not $docStats.ByDomain[$domain]) {
             $docStats.ByDomain[$domain] = 0
@@ -189,15 +272,40 @@ foreach ($doc in $documents) {
     }
 }
 
+# Count relationship types
+foreach ($doc in $documents) {
+    foreach ($rel in $doc.Related) {
+        $type = if ($rel.type) { $rel.type } else { "references" }
+        if (-not $docStats.ByRelationType[$type]) {
+            $docStats.ByRelationType[$type] = 0
+        }
+        $docStats.ByRelationType[$type]++
+    }
+}
+
+# Find high-connectivity nodes (hubs)
+$hubThreshold = 3
+$hubs = $documents | Where-Object {
+    ($_.Related.Count + $_.ReferencedBy.Count) -ge $hubThreshold
+} | Sort-Object { $_.Related.Count + $_.ReferencedBy.Count } -Descending
+
 # Display statistics
 Write-Host "`n--- Statistics ---" -ForegroundColor Yellow
-Write-Host "Total documents:  $($docStats.Total)"
-Write-Host "  Active:         $($docStats.Active)"
-Write-Host "  Deprecated:     $($docStats.Deprecated)"
-Write-Host "  With Beads:     $($docStats.WithBeads)"
+Write-Host "Total documents:      $($docStats.Total)"
+Write-Host "  Active:             $($docStats.Active)"
+Write-Host "  Deprecated:         $($docStats.Deprecated)"
+Write-Host "  With Beads:         $($docStats.WithBeads)"
+Write-Host "  With Relationships: $($docStats.WithRelationships)"
 
 if ($docStats.MissingMd -gt 0) {
-    Write-Host "  Missing .md:    $($docStats.MissingMd)" -ForegroundColor Red
+    Write-Host "  Missing .md:        $($docStats.MissingMd)" -ForegroundColor Red
+}
+
+Write-Host "`nRelationships:        $($docStats.TotalRelationships) total"
+if ($docStats.ByRelationType.Count -gt 0) {
+    foreach ($type in $docStats.ByRelationType.Keys | Sort-Object) {
+        Write-Host "  ${type}: $($docStats.ByRelationType[$type])"
+    }
 }
 
 if ($docStats.ByDomain.Count -gt 0) {
@@ -207,11 +315,54 @@ if ($docStats.ByDomain.Count -gt 0) {
     }
 }
 
+if ($hubs.Count -gt 0) {
+    Write-Host "`nHigh-Connectivity Nodes (hubs):" -ForegroundColor Cyan
+    foreach ($hub in $hubs | Select-Object -First 5) {
+        $totalConn = $hub.Related.Count + $hub.ReferencedBy.Count
+        Write-Host "  $($hub.Id): $totalConn connections ($($hub.Related.Count) out, $($hub.ReferencedBy.Count) in)"
+    }
+}
+
 if ($errors.Count -gt 0) {
     Write-Host "`n--- Errors ---" -ForegroundColor Red
     foreach ($err in $errors) {
         Write-Host "  $err"
     }
+}
+
+# Graph mode - detailed connectivity analysis
+if ($Graph) {
+    Write-Host "`n--- Graph Analysis ---" -ForegroundColor Yellow
+
+    # Find orphan nodes (no connections)
+    $orphans = $documents | Where-Object {
+        $_.Related.Count -eq 0 -and $_.ReferencedBy.Count -eq 0
+    }
+
+    if ($orphans.Count -gt 0) {
+        Write-Host "`nOrphan Nodes (no connections):" -ForegroundColor Red
+        foreach ($orphan in $orphans) {
+            Write-Host "  $($orphan.Id): $($orphan.Title)"
+        }
+    }
+
+    # Show all connections for each document
+    Write-Host "`nDocument Connections:"
+    foreach ($doc in $documents | Sort-Object Id) {
+        $totalConn = $doc.Related.Count + $doc.ReferencedBy.Count
+        if ($totalConn -gt 0) {
+            Write-Host "`n  $($doc.Id) ($totalConn connections):" -ForegroundColor Cyan
+            foreach ($rel in $doc.Related) {
+                Write-Host "    -> $($rel.id) [$($rel.type)]"
+            }
+            foreach ($ref in $doc.ReferencedBy) {
+                Write-Host "    <- $($ref.id) [$($ref.type)]"
+            }
+        }
+    }
+
+    Write-Host ""
+    exit 0
 }
 
 # Stats only mode - exit here
@@ -247,6 +398,23 @@ if ($Verify) {
         $issues += "Duplicate DOC-ID: $($dup.Name) (found $($dup.Count) times)"
     }
 
+    # Check for broken relationships
+    foreach ($doc in $documents) {
+        foreach ($rel in $doc.Related) {
+            if (-not $docIndex.ContainsKey($rel.id)) {
+                $issues += "Broken relationship in $($doc.Id): references non-existent $($rel.id)"
+            }
+        }
+    }
+
+    # Check for orphan nodes (warning, not error)
+    $orphans = $documents | Where-Object {
+        $_.Related.Count -eq 0 -and $_.ReferencedBy.Count -eq 0
+    }
+    if ($orphans.Count -gt 0) {
+        Write-Host "`nWarning: $($orphans.Count) orphan node(s) with no connections" -ForegroundColor Yellow
+    }
+
     if ($issues.Count -eq 0) {
         Write-Host "No issues found." -ForegroundColor Green
     }
@@ -272,8 +440,32 @@ $registryContent = @"
 # MLDA Document Registry
 # Auto-generated by mlda-registry.ps1
 # Last regenerated: $date
+#
+# Neocortex Model: Documents are neurons, relationships are dendrites
+# Use this registry for graph navigation and reverse lookups
 
 last_updated: $date
+
+# Graph Statistics
+graph:
+  total_documents: $($docStats.Total)
+  total_relationships: $($docStats.TotalRelationships)
+  documents_with_relationships: $($docStats.WithRelationships)
+  orphan_documents: $($documents | Where-Object { $_.Related.Count -eq 0 -and $_.ReferencedBy.Count -eq 0 } | Measure-Object).Count
+
+# Relationship type counts
+relationship_types:
+"@
+
+foreach ($type in $docStats.ByRelationType.Keys | Sort-Object) {
+    $registryContent += "`n  $type`: $($docStats.ByRelationType[$type])"
+}
+
+if ($docStats.ByRelationType.Count -eq 0) {
+    $registryContent += "`n  # No relationships defined yet"
+}
+
+$registryContent += @"
 
 # Domain codes used in this project
 domains:
@@ -292,7 +484,26 @@ foreach ($domain in $docStats.ByDomain.Keys | Sort-Object) {
 
 $registryContent += @"
 
-# Document index (auto-generated)
+# High-connectivity nodes (hubs) - good entry points for navigation
+hubs:
+"@
+
+if ($hubs.Count -gt 0) {
+    foreach ($hub in $hubs | Select-Object -First 10) {
+        $totalConn = $hub.Related.Count + $hub.ReferencedBy.Count
+        $registryContent += "`n  - id: $($hub.Id)"
+        $registryContent += "`n    connections: $totalConn"
+        $registryContent += "`n    outgoing: $($hub.Related.Count)"
+        $registryContent += "`n    incoming: $($hub.ReferencedBy.Count)"
+    }
+}
+else {
+    $registryContent += "`n  # No hub documents yet (need 3+ connections)"
+}
+
+$registryContent += @"
+
+# Document index with relationships
 # Total: $($docStats.Total) | Active: $($docStats.Active) | Deprecated: $($docStats.Deprecated)
 documents:
 "@
@@ -303,7 +514,7 @@ if ($documents.Count -eq 0) {
 else {
     # Sort by domain then ID number
     $sorted = $documents | Sort-Object {
-        if ($_.Id -match "DOC-(\w+)-(\d+)") {
+        if ($_.Id -match "^(?:DOC-)?(\w+)-(\d+)") {
             "{0}-{1:D5}" -f $Matches[1], [int]$Matches[2]
         } else {
             $_.Id
@@ -315,8 +526,31 @@ else {
         $registryContent += "`n    title: `"$($doc.Title)`""
         $registryContent += "`n    path: $($doc.Path)"
         $registryContent += "`n    status: $($doc.Status)"
+
+        if ($doc.Tags.Count -gt 0) {
+            $registryContent += "`n    tags: [$($doc.Tags -join ', ')]"
+        }
+
         if ($doc.Beads) {
             $registryContent += "`n    beads: `"$($doc.Beads)`""
+        }
+
+        # Forward relationships (relates_to)
+        if ($doc.Related.Count -gt 0) {
+            $registryContent += "`n    relates_to:"
+            foreach ($rel in $doc.Related) {
+                $registryContent += "`n      - id: $($rel.id)"
+                $registryContent += "`n        type: $($rel.type)"
+            }
+        }
+
+        # Reverse relationships (referenced_by) - computed
+        if ($doc.ReferencedBy.Count -gt 0) {
+            $registryContent += "`n    referenced_by:"
+            foreach ($ref in $doc.ReferencedBy) {
+                $registryContent += "`n      - id: $($ref.id)"
+                $registryContent += "`n        type: $($ref.type)"
+            }
         }
     }
 }

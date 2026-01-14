@@ -1,0 +1,34 @@
+id: DOC-CORE-002
+title: "MLDA Navigation Protocol"
+status: active
+
+created:
+  date: "2026-01-14"
+  by: "Claude (Architect)"
+
+updated:
+  date: "2026-01-14"
+  by: "Claude (Architect)"
+
+tags:
+  - architecture
+  - mlda
+  - navigation
+  - protocol
+  - agent-behavior
+  - traversal
+
+summary: |
+  Defines how agents navigate the MLDA knowledge graph. Covers the full
+  lifecycle: initialization, entry point identification, traversal rules,
+  termination conditions, and reporting requirements.
+
+related:
+  - id: DOC-CORE-001
+    type: depends-on
+    why: "Neocortex paradigm - foundational model this protocol implements"
+  - id: DOC-CORE-003
+    type: references
+    why: "Sidecar schema - defines the relationship structure being navigated"
+
+beads: "Ways of Development-24"

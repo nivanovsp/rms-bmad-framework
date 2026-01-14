@@ -63,6 +63,15 @@ Create a focused epic following this structure:
 
 {{1-2 sentences describing what the epic will accomplish and why it adds value}}
 
+#### Documentation References (MLDA Entry Points)
+
+**NEOCORTEX MODEL:** Epics are entry points into the knowledge graph. List DOC-IDs for context:
+
+- **Primary Documents:** {{DOC-IDs required for this epic}}
+- **Related Requirements:** {{REQ-IDs if applicable}}
+
+Developers will use `*explore` to navigate these documents and their relationships.
+
 #### Epic Description
 
 **Existing System Context:**

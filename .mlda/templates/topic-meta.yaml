@@ -1,27 +1,50 @@
-# Metadata sidecar for topic document
+# MLDA Sidecar Template
 # Save as: {topic-name}.meta.yaml alongside {topic-name}.md
+# See DOC-CORE-003 for full schema documentation
+
+# ═══════════════════════════════════════════════════════════════════════════
+# REQUIRED FIELDS
+# ═══════════════════════════════════════════════════════════════════════════
 
 id: DOC-{DOMAIN}-{NNN}
 title: "{Document Title}"
-status: active  # active | deprecated
+status: active  # active | draft | deprecated
 
 created:
   date: "{YYYY-MM-DD}"
-  by: "{Author}"
+  by: "{Agent/Author}"
 
 updated:
   date: "{YYYY-MM-DD}"
-  by: "{Author}"
+  by: "{Agent/Author}"
 
-# Tags for discovery
 tags:
-  - {tag1}
-  - {tag2}
+  - {domain}
+  - {document-type}
+  - {feature-area}
 
-# Links to related docs (optional)
+# ═══════════════════════════════════════════════════════════════════════════
+# RELATIONSHIPS (DENDRITES) - Critical for knowledge graph navigation
+# ═══════════════════════════════════════════════════════════════════════════
+
 related:
   - id: DOC-XXX-NNN
-    why: "{relationship description}"
+    type: depends-on    # depends-on | extends | references | supersedes
+    why: "{Why this relationship exists - helps agents decide to follow}"
 
-# Beads link (optional)
-beads: "{ProjectName-N}"
+# ═══════════════════════════════════════════════════════════════════════════
+# OPTIONAL FIELDS
+# ═══════════════════════════════════════════════════════════════════════════
+
+# summary: |
+#   Brief description for quick context during navigation.
+#   2-3 sentences covering key topics.
+
+# source:
+#   research: "{research-id}"
+#   sections: ["1", "2.1"]
+
+# metrics:
+#   {metric_name}: {value}
+
+# beads: "{Project-N}"

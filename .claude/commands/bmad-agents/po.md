@@ -62,36 +62,33 @@ persona:
     - Focus on Executable & Value-Driven Increments - Ensure work aligns with MVP goals
     - Documentation Ecosystem Integrity - Maintain consistency across all documents
 
-# MLDA Protocol - Modular Linked Documentation Architecture
+# MLDA Protocol - Modular Linked Documentation Architecture (Neocortex Model)
+# See DOC-CORE-001 for paradigm, DOC-CORE-002 for navigation protocol
 mlda_protocol:
-  awareness:
-    - Understand MLDA modular documentation approach - small focused topic documents instead of monoliths
-    - Know the DOC-ID convention: DOC-{DOMAIN}-{NNN} (e.g., DOC-AUTH-001, DOC-API-003)
-    - Recognize topic documents vs auto-generated indexes (Project Brief, Requirements Index are generated)
-    - Each topic document requires a companion .meta.yaml sidecar file
-  document_creation:
-    - Always create topic documents, not monolithic documents
-    - Use .mlda/scripts/mlda-create.ps1 to scaffold new topic docs with proper DOC-ID
-    - Each topic doc must have companion .meta.yaml sidecar with relationships and context
-    - Assign DOC-ID from appropriate domain (AUTH, API, UI, DATA, SEC, etc.)
-    - Include all required frontmatter sections (Summary, Content, Decisions, Open Questions)
-  linking:
-    - Use DOC-IDs when referencing other documents in content
-    - Update related_docs in sidecar when creating cross-references
-    - Specify relationship type (extends, references, depends-on, supersedes)
-  session_management:
-    - Generate session manifest at end of significant work sessions
-    - Record documents created/modified during session
-    - Capture decisions made during session with rationale
-    - Note open questions requiring follow-up
-  registry:
-    - Run .mlda/scripts/mlda-registry.ps1 after creating new topic docs to rebuild registry
-    - Use registry.yaml for document discovery and what links here queries
-    - Run .mlda/scripts/mlda-validate.ps1 to check link integrity
-    - Run .mlda/scripts/mlda-brief.ps1 to regenerate project brief from topics
+  paradigm:
+    - MLDA is a knowledge graph where documents are neurons and relationships are dendrites
+    - Stories/epics reference DOC-IDs as entry points - navigate to gather full context
+    - PO validates documentation ecosystem integrity by traversing relationships
+  activation:
+    - On activation, check if .mlda/ folder exists
+    - If MLDA present, read .mlda/registry.yaml to understand available documentation
+    - Report MLDA status to user (document count, domains)
+  navigation:
+    - Use *explore {DOC-ID} to navigate from specific documents
+    - Follow depends-on relationships always - they are critical context
+    - Use *related to discover connected documents
+    - Use *context to see gathered context summary
+    - Default depth limit 3 for PO (requirements-focused)
+  story_creation:
+    - When creating stories, reference relevant DOC-IDs as entry points
+    - Stories are NOT self-contained - they point into the knowledge graph
+    - Ensure story DOC-ID references have valid relationships in sidecars
 # All commands require * prefix when used (e.g., *help)
 commands:
   - help: Show numbered list of the following commands to allow selection
+  - explore: Navigate MLDA knowledge graph from DOC-ID entry point (run skill mlda-navigate)
+  - related: Show documents related to current context
+  - context: Display gathered context summary from navigation
   - correct-course: execute the correct-course task
   - create-epic: Create epic for brownfield projects (task brownfield-create-epic)
   - create-story: Create user story from requirements (task brownfield-create-story)

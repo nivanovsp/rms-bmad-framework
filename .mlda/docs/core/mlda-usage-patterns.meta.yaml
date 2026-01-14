@@ -1,0 +1,25 @@
+# MLDA Sidecar - DOC-CORE-004
+# Usage patterns guide for structuring documents
+
+id: DOC-CORE-004
+title: "MLDA Usage Patterns"
+status: active
+created: 2026-01-14
+updated: 2026-01-14
+tags:
+  - mlda
+  - user-guide
+  - best-practices
+  - navigation
+
+# Dendrites - connections to other neurons
+related:
+  - id: DOC-CORE-001
+    type: extends
+    why: "Builds upon neocortex paradigm with practical patterns"
+  - id: DOC-CORE-002
+    type: extends
+    why: "Provides user-facing patterns for navigation protocol"
+  - id: DOC-CORE-003
+    type: references
+    why: "References sidecar schema for relationship examples"

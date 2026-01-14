@@ -103,9 +103,31 @@ All commands support `--json` flag. Issues auto-sync via git-friendly JSONL file
 
 ---
 
-## MLDA Protocol
+## MLDA Protocol - The Neocortex Model
 
-**Modular Linked Documentation Architecture** - for projects using MLDA:
+**Modular Linked Documentation Architecture** - a knowledge graph that agents navigate.
+
+### The Neocortex Paradigm
+
+MLDA models documentation as a **neural network**:
+
+| Brain Concept | MLDA Equivalent | Description |
+|---------------|-----------------|-------------|
+| **Neuron** | Document | A single unit storing specific knowledge |
+| **Dendrites** | Relationships (`related` in sidecar) | Connections to other documents |
+| **Axon** | DOC-ID | The unique identifier that enables connections |
+| **Signal** | Agent reading a document | Activation that triggers exploration |
+| **Signal Propagation** | Following relationships | Agent traversing from doc to doc |
+
+**Key Principle:** Stories and tasks are **entry points** into the knowledge graph, not self-contained specs. Agents navigate the graph by following relationships (dendrites) to gather context.
+
+### Navigation Commands
+
+All agents support these navigation commands:
+- `*explore {DOC-ID}` - Navigate from a specific document
+- `*related` - Show documents related to current context
+- `*context` - Display gathered context summary
+- `*gather-context` - Run full context-gathering workflow
 
 ### Project Initialization
 
@@ -122,38 +144,40 @@ For documentation-heavy projects (15+ expected documents), initialize MLDA:
 .\.mlda\scripts\mlda-init-project.ps1 -Domains API,DATA,SEC
 ```
 
-The initialization will:
-1. Ask about documentation scope
-2. Prompt for domain selection
-3. Scaffold `.mlda/` folder structure
-4. Copy scripts and templates
-5. Initialize registry.yaml
-
 ### Document Creation
 - Create topic documents, not monolithic documents
 - Use `.mlda/scripts/mlda-create.ps1` to scaffold new topic docs
 - Each topic doc needs a companion `.meta.yaml` sidecar
-- Assign DOC-ID from appropriate domain (AUTH, API, UI, DATA, SEC, INV, etc.)
+- **CRITICAL:** Define relationships in sidecars - documents without relationships are "dead neurons"
 
-### Linking
-- Use DOC-IDs when referencing other documents: `DOC-{DOMAIN}-{NNN}`
-- Update `related_docs` in sidecar when creating cross-references
-- Specify relationship type: extends, references, depends-on, supersedes
+### Relationships (Dendrites)
+
+Relationship types and their signal strength:
+
+| Type | Signal | Meaning |
+|------|--------|---------|
+| `depends-on` | **Strong** | Cannot understand without target - always follow |
+| `extends` | **Medium** | Adds detail to target - follow if depth allows |
+| `references` | **Weak** | Mentions target - follow if relevant |
+| `supersedes` | **Redirect** | Replaces target - follow this, ignore target |
+
+The `why` field explains the reason for the connection, helping agents decide whether to follow.
 
 ### Registry Management
 - Run `mlda-registry.ps1` after creating new topic docs
+- Run `mlda-registry.ps1 -Graph` to see connectivity analysis
 - Run `mlda-validate.ps1` to check link integrity
-- Run `mlda-brief.ps1` to regenerate project brief
+- Run `mlda-graph.ps1` to visualize document relationships
 
-### Migration
+### Stories as Entry Points
 
-For existing projects with documents that need MLDA:
+Stories reference DOC-IDs in their "Documentation References" section. When a developer receives a story:
+1. Parse DOC-ID references from the story
+2. Run `*explore` to navigate the knowledge graph
+3. Gather context from related documents
+4. Proceed with implementation
 
-```bash
-.\.mlda\scripts\mlda-init-project.ps1 -Domains INV -Migrate
-```
-
-This creates `.meta.yaml` sidecars for existing `.md` files.
+This replaces the old model where stories had to contain all necessary information.
 
 ---
 
