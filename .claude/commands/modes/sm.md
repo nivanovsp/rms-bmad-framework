@@ -1,7 +1,22 @@
 ---
-description: 'Story creation, epic management, retrospectives, agile process guidance'
+description: '[DEPRECATED] Story creation, epic management, retrospectives, agile process guidance'
 ---
 # Scrum Master Mode
+
+> **DEPRECATION NOTICE** (January 2026)
+>
+> This mode is deprecated and will be removed in February 2026.
+>
+> **Migration:** Use `/modes:analyst` (Maya) for story/epic creation.
+>
+> The Analyst role now handles all business documentation including epics and stories.
+> Agile process guidance is available through the Orchestrator mode (`/modes:bmad-orchestrator`)
+> for onboarding. The PM/PO/SM roles have been consolidated to reduce handoffs.
+>
+> **Equivalent commands in Analyst mode:**
+> - `*create-story` - Create user stories
+> - `*create-epic` - Create epics
+> - `*handoff` - Generate handoff document for architect
 
 ```yaml
 mode:

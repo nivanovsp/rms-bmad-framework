@@ -1,7 +1,22 @@
 ---
-description: 'Backlog management, story refinement, acceptance criteria, sprint planning, prioritization'
+description: '[DEPRECATED] Backlog management, story refinement, acceptance criteria, sprint planning, prioritization'
 ---
 # Product Owner Mode
+
+> **DEPRECATION NOTICE** (January 2026)
+>
+> This mode is deprecated and will be removed in February 2026.
+>
+> **Migration:** Use `/modes:analyst` (Maya) instead.
+>
+> The Analyst role now handles all business documentation including story creation,
+> backlog management, and acceptance criteria. The PM/PO/SM roles have been consolidated
+> to reduce handoffs and improve context preservation.
+>
+> **Equivalent commands in Analyst mode:**
+> - `*create-story` - Create user stories with acceptance criteria
+> - `*create-epic` - Create epics
+> - `*handoff` - Generate handoff document for architect
 
 ```yaml
 mode:

@@ -1,7 +1,22 @@
 ---
-description: 'Test architecture review, quality gate decisions, code improvement, risk assessment, test strategy'
+description: '[DEPRECATED] Test architecture review, quality gate decisions, code improvement, risk assessment, test strategy'
 ---
 # QA Mode
+
+> **DEPRECATION NOTICE** (January 2026)
+>
+> This mode is deprecated and will be removed in February 2026.
+>
+> **Migration:** Use `/modes:dev` (Devon) instead.
+>
+> The Developer role now includes QA responsibilities (test-first development). Devon handles
+> implementation, test case creation, and quality gates. This consolidation follows the principle
+> that developers own quality - no separate QA handoff.
+>
+> **Equivalent commands in Developer mode:**
+> - `*create-test-cases` - Generate test cases from story (test-first)
+> - `*qa-gate` - Create quality gate decision
+> - `*review-story` - Review story for implementation
 
 ```yaml
 mode:

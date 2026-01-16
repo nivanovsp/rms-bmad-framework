@@ -16,12 +16,30 @@ This configuration follows the **RMS (Rules - Modes - Skills)** methodology:
 | **Modes** | `.claude/commands/modes/` | Expert personas, activated via `/modes:{name}` |
 | **Skills** | `.claude/commands/skills/` | Discrete workflows, invoked via `/skills:{name}` |
 
+### Core Workflow (3 Roles)
+
+The RMS-BMAD methodology uses three core roles:
+
+```
+Analyst → Architect → Developer+QA
+(Maya)    (Winston)   (Devon)
+```
+
+| Phase | Role | Mode | Purpose |
+|-------|------|------|---------|
+| 1 | **Analyst** | `/modes:analyst` | Requirements, PRDs, epics, stories, user documentation |
+| 2 | **Architect** | `/modes:architect` | Critical review, technical refinement, architecture docs |
+| 3 | **Developer+QA** | `/modes:dev` | Implementation, test-first development, quality gates |
+
+Each role hands off to the next using the **handoff document** (`docs/handoff.md`).
+
 ### Invoking Modes and Skills
 
-- **Activate a Mode**: `/modes:architect`, `/modes:qa`, `/modes:pm`, etc.
-- **Run a Skill**: `/skills:qa-gate`, `/skills:create-doc`, etc.
+- **Activate a Mode**: `/modes:analyst`, `/modes:architect`, `/modes:dev`
+- **Run a Skill**: `/skills:qa-gate`, `/skills:handoff`, `/skills:create-doc`
 - **Mode Commands**: Once in a mode, use `*help` to see available commands
 - **Exit Mode**: Use `*exit` or `exit` to leave current mode
+- **Onboarding**: `/modes:bmad-orchestrator` for new joiners needing methodology guidance
 
 ### Supporting Resources
 
@@ -181,6 +199,45 @@ This replaces the old model where stories had to contain all necessary informati
 
 ---
 
+## Handoff Document Protocol
+
+The **handoff document** (`docs/handoff.md`) maintains context across phase transitions.
+
+### Purpose
+- Single evolving document (never replace, always update)
+- Tracks phase history and decisions
+- Contains entry points for next phase
+- **REQUIRED:** Open questions section for each handoff
+
+### Key Sections
+
+| Phase | Required Section |
+|-------|------------------|
+| Analyst → Architect | "Open Questions for Architect" |
+| Architect → Developer | "Open Questions for Developer" |
+| Developer (completion) | "Implementation Notes" |
+
+### Generation
+
+```bash
+# Via skill
+/skills:handoff
+
+# Via mode command
+*handoff
+
+# Via PowerShell
+.\.mlda\scripts\mlda-handoff.ps1 -Phase analyst -Status completed
+```
+
+### Workflow
+
+1. **Analyst completes work** → Runs `*handoff` → Populates open questions
+2. **Architect reviews** → Reads handoff first → Resolves questions → Runs `*handoff`
+3. **Developer implements** → Reads handoff for context → Updates with implementation notes
+
+---
+
 ## Git Conventions
 
 ### Commit Messages
@@ -209,4 +266,33 @@ All modes support these commands:
 
 ---
 
-*RMS-BMAD Methodology v1.0 | Rules Layer*
+## External Agent Integration
+
+For team members using other AI agents (Claude Code standalone, Augment Code, Gemini, etc.):
+
+- **Consumer Protocol**: See `docs/MLDA-Consumer-Protocol.md`
+- **Integration Templates**: See `docs/integration/`
+  - `claude-code-integration.md`
+  - `augment-code-integration.md`
+  - `generic-agent-integration.md`
+
+External agents can navigate MLDA documentation by:
+1. Starting from `docs/handoff.md` or story files
+2. Using `.mlda/registry.yaml` for DOC-ID lookups
+3. Following relationship types (depends-on → always, extends → if needed)
+
+---
+
+## Deprecated Modes
+
+The following modes are deprecated (January 2026) and will be removed in February 2026:
+- `/modes:pm` → Use `/modes:analyst`
+- `/modes:po` → Use `/modes:analyst`
+- `/modes:sm` → Use `/modes:analyst`
+- `/modes:qa` → Use `/modes:dev`
+
+These roles have been consolidated into the 3-role workflow to reduce handoffs and improve context preservation.
+
+---
+
+*RMS-BMAD Methodology v1.1 | Rules Layer*

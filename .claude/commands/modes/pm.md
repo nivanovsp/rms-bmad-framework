@@ -1,7 +1,23 @@
 ---
-description: 'PRDs, product strategy, feature prioritization, roadmap planning, stakeholder communication'
+description: '[DEPRECATED] PRDs, product strategy, feature prioritization, roadmap planning, stakeholder communication'
 ---
 # Product Manager Mode
+
+> **DEPRECATION NOTICE** (January 2026)
+>
+> This mode is deprecated and will be removed in February 2026.
+>
+> **Migration:** Use `/modes:analyst` (Maya) instead.
+>
+> The Analyst role now handles all business documentation including PRDs, epics, stories,
+> requirements, and user documentation. The PM/PO/SM roles have been consolidated to reduce
+> handoffs and improve context preservation.
+>
+> **Equivalent commands in Analyst mode:**
+> - `*create-prd` - Create PRD documents
+> - `*create-epic` - Create epics
+> - `*create-story` - Create user stories
+> - `*handoff` - Generate handoff document for architect
 
 ```yaml
 mode:
